@@ -11,7 +11,7 @@ class Makale(models.Model):
     yayinlanma_tarihi = models.DateField()
     aktif = models.BooleanField(default=True)
     yaratilma_tarihi = models.DateTimeField(auto_now_add=True)
-    guncellenme_tarihi = models.DateField(auto_now=True)
+    guncellenme_tarihi = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.baslik
