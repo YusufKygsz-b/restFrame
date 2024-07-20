@@ -11,7 +11,7 @@ class MakaleSerializer(serializers.Serializer):
     yayinlanma_tarihi = serializers.DateField()
     aktif = serializers.BooleanField()
     yaratilma_tarihi = serializers.DateTimeField(read_only=True)
-    guncellenme_tarihi = serializers.DateField(read_only=True)
+    guncellenme_tarihi = serializers.DateTimeField(read_only=True)
 
 
 # validated_data argumanı arka tarafta belirtilen kuralları işleyerek işleme alır.
