@@ -1,47 +1,41 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-
 from news.models import Makale
 from news.api.serializers import MakaleSerializer
-
-
-# Class Views
 from rest_framework.views import APIView
 from rest_framework.generics import get_object_or_404
 
 class MakeListCreateAPIView(APIView):
     def get(self, request):
-        makaleler = Makale.objects.filter(aktif = True)
-        serializer = MakaleSerializer(makaleler, many=True)
+        makaleler = Makale.objects.filter(aktif=True)
+        serializer = MakaleSerializer(makaleler, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = MakaleSerializer(data=request.data)
+        serializer = MakaleSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response (serializer.errors ,status=status.HTTP_400_BAD_REQUEST)
-    
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class MakaleDetailAPIView(APIView):
     def get_object(self, pk):
         makale_instance = get_object_or_404(Makale, pk=pk)
         return makale_instance
-    
+
     def get(self, request, pk):
         makale = self.get_object(pk=pk)
-        serializer = MakaleSerializer(makale)
+        serializer = MakaleSerializer(makale, context={'request': request})
         return Response(serializer.data)
-    
+
     def put(self, request, pk):
-        makale = self.get_object(pk = pk)
-        serializer = MakaleSerializer(makale, data=request.data)
+        makale = self.get_object(pk=pk)
+        serializer = MakaleSerializer(makale, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
     def delete(self, request, pk):
         makale = self.get_object(pk=pk)
