@@ -30,3 +30,48 @@ def makale_list_create_api_view(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def makale_detail_api_view(request, pk):
+    try:
+        makale_instance = Makale.objects.get(pk = pk)
+
+    except Makale.DoesNotExist:
+        return Response(
+            {
+                'Errors': {
+                    'code': 404,
+                    'message': f"This article ({pk}) not found."
+                }
+            },
+            status= status.HTTP_404_NOT_FOUND
+        )
+    
+    if request.method == 'GET':
+        if makale_instance.aktif:
+            serializer = MakaleSerializer(makale_instance) # JSON'a çevirilir.
+            return Response(serializer.data) # JSON formatlı yapıya geri döndürülür.
+        
+        return Response(status= status.HTTP_405_METHOD_NOT_ALLOWED)
+    
+    # Güncelleme Fonksiyonu
+    elif request.method == 'PUT':
+        serializer = MakaleSerializer(makale_instance, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    elif request.method == 'DELETE':
+        makale_instance.delete()
+        return Response(
+            {
+                'islem' : {
+                    'code' : 204,
+                    'message' : f"({pk}) .th article was deleted."
+                }
+            },
+            status= status.HTTP_204_NO_CONTENT
+        )
