@@ -37,3 +37,17 @@ class MakaleSerializer(serializers.Serializer):
         instance.aktif = validated_data.get ('aktif', instance.aktif)
         instance.save()
         return instance
+    
+
+
+    def validate(self, data): # object Level
+        if data['baslik'] == data['aciklama']:
+            raise serializers.ValidationError('Header and Description field are not same. Plase change it.')
+        return data
+    
+    def validate_baslik(self, value): # value = argument value
+        length_of_value = len(value)
+        if length_of_value < 15:
+            raise serializers.ValidationError(f'baslik alanı minimum 20 karakter içermeli. Girilen karakter sayısı: {length_of_value}')
+        return value
+    
