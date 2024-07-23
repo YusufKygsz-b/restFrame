@@ -4,32 +4,32 @@ from rest_framework.decorators import api_view
 from news.models import Makale, Gazeteci
 from news.api.serializers import MakaleSerializer, GazeteciSerializer
 from rest_framework.views import APIView
+
 from rest_framework.generics import get_object_or_404
+from rest_framework import permissions
+from news.api.permissions import IsSuperUserOnly
 
-
-from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin
 from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListCreateAPIView
 
 
-class GazeteciListCreateAPIView(ListModelMixin, CreateModelMixin ,GenericAPIView):
-
+class GazeteciListCreateAPIView(ListCreateAPIView):
     queryset = Gazeteci.objects.all()
     serializer_class = GazeteciSerializer
+    # Permission section feature field (Definitaion of exclusive permission)
+    # Test User (Normal User)
+    # ad523A6t.
+    permission_classes = [IsSuperUserOnly]
 
-    # Listelemek için Get metodu
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-        
-    # Create a model
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+class GazeteciDetailAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = Gazeteci.objects.all()
+    serializer_class = GazeteciSerializer
+    permission_classes = [permissions.IsAdminUser]
 
 
 class MakeListCreateAPIView(ListCreateAPIView):
     queryset = Makale.objects.filter(aktif=True)
     serializer_class = MakaleSerializer
-
+    permission_classes = [permissions.IsAdminUser]
 
 """
 class MakaleDetailAPIView(RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin, GenericAPIView ):
@@ -50,6 +50,7 @@ class MakaleDetailAPIView(RetrieveModelMixin, UpdateModelMixin, DestroyModelMixi
 class MakaleDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Makale.objects.all()
     serializer_class = MakaleSerializer
+    permission_classes = [permissions.IsAdminUser]
 
 """
 # class MakeListCreateAPIView(APIView):
@@ -80,7 +81,6 @@ class MakaleDetailAPIView(RetrieveUpdateDestroyAPIView):
 #             return Response(serializer.data, status=status.HTTP_201_CREATED)
 #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 """    
-
 
 
 # class MakaleDetailAPIView(APIView):
