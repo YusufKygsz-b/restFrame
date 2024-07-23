@@ -1,10 +1,25 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from news.models import Makale
-from news.api.serializers import MakaleSerializer
+from news.models import Makale, Gazeteci
+from news.api.serializers import MakaleSerializer, GazeteciSerializer
 from rest_framework.views import APIView
 from rest_framework.generics import get_object_or_404
+
+
+class GazeteciListCreateAPIView(APIView):
+    def get(self, request):
+        yazarlar = Gazeteci.objects.all()
+        serializer = GazeteciSerializer(yazarlar, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = GazeteciSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class MakeListCreateAPIView(APIView):
     def get(self, request):
@@ -43,7 +58,7 @@ class MakaleDetailAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-
+"""
 #api_view decorator (function based view yaratabilmek için)
 # APIView classes
 # Browsable API
@@ -53,10 +68,6 @@ class MakaleDetailAPIView(APIView):
 
 # api view içerisinde bir liste içerisinde kullanılacak olan metod
 # yazılmalı
-
-
-
-
 
 # @api_view(['GET', 'POST'])
 # def makale_list_create_api_view(request):
@@ -119,3 +130,4 @@ class MakaleDetailAPIView(APIView):
     #         },
     #         status= status.HTTP_204_NO_CONTENT
     #     )
+    """
