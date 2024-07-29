@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view
 from news.models import Makale, Gazeteci
 from news.api.serializers import MakaleSerializer, GazeteciSerializer
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 
 from rest_framework.generics import get_object_or_404
 from rest_framework import permissions
@@ -17,6 +18,13 @@ class GazeteciListCreateAPIView(ListCreateAPIView):
     serializer_class = GazeteciSerializer
     # Permission section feature field (Definitaion of exclusive permission)
     # Test User (Normal User)
+    # ad523A6t.
+    permission_classes = [IsSuperUserOnly]
+
+class GazeteciDetCreateAPIView(ModelViewSet):
+    queryset = Gazeteci.objects.all()
+    serializer_class = GazeteciSerializer
+    # Test (Normal User)
     # ad523A6t.
     permission_classes = [IsSuperUserOnly]
 
@@ -51,6 +59,9 @@ class MakaleDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Makale.objects.all()
     serializer_class = MakaleSerializer
     permission_classes = [permissions.IsAdminUser]
+
+
+
 
 """
 # class MakeListCreateAPIView(APIView):

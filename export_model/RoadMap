@@ -1,0 +1,60 @@
+"""
+Yol Haritası: CSV Export View
+
+1. **Kütüphanelerin İçe Aktarılması**
+   - `csv`: CSV dosyalarını oluşturmak ve yazmak için kullanılır.
+   - `types`: Python türlerini ve tür kontrol işlevlerini sağlar.
+   - `FieldDoesNotExist`, `ImproperlyConfigured`: Django'daki model alanları ve yapılandırma hatalarını yönetir.
+   - `HttpResponse`: HTTP yanıtları oluşturmak için kullanılır.
+   - `force_str`: Karakter dizilerini uygun şekilde işlemek için kullanılır.
+   - `View`, `MultipleObjectMixin`: Django'da görünüm ve karışım sınıflarını sağlar.
+
+2. **Yardımcı Fonksiyon: `_get_method_type`**
+   - Bu fonksiyon, bir yöntemin türünü elde etmek için kullanılır. İçsel olarak, metotların türlerini tanımlar ve kontrol eder.
+
+3. **`_method_type` Değişkeni**
+   - `_get_method_type` fonksiyonundan elde edilen metot türünü tutar.
+
+4. **`CSVExportView` Sınıfı**
+   - `MultipleObjectMixin` ve `View` sınıflarından türetilmiş bir sınıftır.
+   - CSV formatında veri dışa aktarma işlevi sağlar.
+   - Sınıf değişkenleri:
+     - `fields`: CSV'de hangi alanların yer alacağını belirler.
+     - `exclude`: Hariç tutulacak alanları belirler.
+     - `header`: CSV dosyasında başlık satırı olup olmayacağını belirler.
+     - `verbose_names`: Alan adlarının okunabilir isimlerini kullanıp kullanmayacağını belirler.
+     - `specify_separator`: Ayracı belirtme seçeneği sağlar, genellikle Excel için kullanılır.
+     - `filename`: CSV dosyasının adını belirler.
+
+5. **Sınıfın `__init__` Metodu**
+   - Özelleştirilmiş başlangıç işlemleri gerçekleştirir.
+   - `fields` ve `exclude` ayarlarının geçerli olup olmadığını kontrol eder.
+   - Belirli fonksiyonların geçersiz kılınmış olup olmadığını kontrol eder ve `ImproperlyConfigured` hatalarını fırlatır.
+
+6. **`get_fields` Metodu**
+   - Dinamik alanlar gerekiyorsa geçersiz kılınabilir.
+   - Verilen `queryset` için hangi alanların kullanılacağını belirler.
+
+7. **`get_filename` Metodu**
+   - Dinamik dosya adı gereksinimleri varsa geçersiz kılınabilir.
+   - `queryset` modelinin adını kullanarak dosya adını oluşturur.
+
+8. **`get_field_value` Metodu**
+   - Belirli bir alan adı için objenin değerini alır.
+   - İlişkili alanlar ve alan değerlerini nasıl yöneteceğinizi tanımlar.
+
+9. **`get_header_name` Metodu**
+   - Başlık satırı için alan adlarını döndürür.
+   - Alan adlarını okunabilir biçimde döndürmek için `verbose_names` ayarını kullanır.
+
+10. **`get_csv_writer_fmtparams` Metodu**
+    - CSV yazıcısı için biçim parametrelerini döndürür.
+    - `dialect` ve `quoting` gibi ayarları yapılandırır.
+
+11. **`get` Metodu**
+    - HTTP GET isteği yapıldığında çağrılır.
+    - `queryset`'i alır ve CSV dosyasını oluşturur.
+    - Başlık ve veri satırlarını CSV dosyasına yazar.
+    - `HttpResponse` ile dosyayı kullanıcıya sunar.
+
+"""
