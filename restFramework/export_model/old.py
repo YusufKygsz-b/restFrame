@@ -106,8 +106,6 @@ class CSVExportView(MultipleObjectMixin, View):
             if func in self.__class__.__dict__ and isinstance(self.__class__.__dict__[func], _method_type):
                 raise ImproperlyConfigured(f"Overriding '{func}()' izin verilmez.")
 
-
-
         if self.paginate_by:
             raise ImproperlyConfigured(f"'{self.__class__.__name__}' pagination desteklemez.")
         
@@ -117,9 +115,8 @@ class CSVExportView(MultipleObjectMixin, View):
         if self.context_object_name:
             raise ImproperlyConfigured(f"'{self.__class__.__name__}' context_object_name ayarlanmasını desteklemez.")
     
-
     def get_fields(self, queryset):
-        """Eğer dinamik alanlar gerekiyorsa bu metod üzerine yazılabilir."""
+        #Eğer dinamik alanlar gerekiyorsa bu metod üzerine yazılabilir.
         field_names = self.fields
         # Eğer alanlar belirtilmemişse veya "__all__" ise modelin tüm alanlarını alır
         if not field_names or field_names == "__all__":
@@ -184,29 +181,27 @@ class CSVExportView(MultipleObjectMixin, View):
             return self.get_field_value(related_obj, related_field_name)
 
     def get_header_name(self, model, field_name):
-        """Belirli alanlar için özel bir başlık gerekiyorsa bu metod üzerine yazılabilir."""
-        if "__" not in field_name:
-            try:
-                field = model._meta.get_field(field_name)
-            except FieldDoesNotExist as e:
-                if not hasattr(model, field_name):
-                    raise e
-                 # field_name bir özellik ise, onun adını döndür
-                return field_name.replace("_", " ").title()
-
-            if self.verbose_names:
-                return force_str(field.verbose_name).title()
-            else:
-                return force_str(field.name)
-        else:
+    # Returns a custom header name for a field, handling both direct and related fields
+        if "__" in field_name:
+            # İç içe ilişkileri ele alın.
             related_field_names = field_name.split("__")
             field = model._meta.get_field(related_field_names[0])
             if not field.is_relation:
-                raise ImproperlyConfigured("{} is not a relation".format(field))
+                raise ImproperlyConfigured(f"{field} is not a relation")
             return self.get_header_name(field.related_model, "__".join(related_field_names[1:]))
+    
+        # Direct fields işleyin.
+        field = model._meta.get_field(field_name)
+        if not field:
+            if hasattr(model, field_name):
+                return field_name.replace("_", " ").title()
+            raise FieldDoesNotExist(f"{field_name} does not exist in {model.__name__}")
+        
+        # Yapılandırmaya bağlı olarak verbose name veya field name döndürür.
+        return force_str(field.verbose_name if self.verbose_names else field.name).title()
 
     def get_csv_writer_fmtparams(self):
-        """CSV yazıcı için format parametrelerini döndürür."""
+        # CSV yazıcı için format parametrelerini döndürür.
         return {
             "dialect": "excel",
             "quoting": csv.QUOTE_ALL,
